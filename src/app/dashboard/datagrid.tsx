@@ -4,15 +4,12 @@ import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
 import {
   GridRowsProp,
   GridRowModesModel,
   GridRowModes,
   DataGrid,
   GridColDef,
-  GridActionsCellItem,
   GridEventListener,
   GridRowId,
   GridRowModel,
@@ -22,6 +19,7 @@ import {
   ToolbarButton,
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
+import Link from "next/link";
 
 declare module "@mui/x-data-grid" {
   interface ToolbarPropsOverrides {
@@ -124,41 +122,14 @@ export default function FullFeaturedCrudGrid({ row }: { row: GridRowsProp }) {
       width: 100,
       cellClassName: "actions",
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              icon={<SaveIcon />}
-              label="Save"
-              material={{
-                sx: {
-                  color: "primary.main",
-                },
-              }}
-              onClick={handleSaveClick(id)}
-              key={"save" + id}
-            />,
-            <GridActionsCellItem
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-              key={"cancel" + id}
-            />,
-          ];
-        }
-
         return [
-          <GridActionsCellItem
-            icon={<EditIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-            key={"edit" + id}
-          />,
+          <Link
+            href={`/dashboard/edit/${id}`}
+            key={randomId()}
+            style={{ textDecoration: "none" }}
+          >
+            <EditIcon />
+          </Link>,
         ];
       },
     },
