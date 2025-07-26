@@ -7,14 +7,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import {
   GridRowsProp,
   GridRowModesModel,
-  GridRowModes,
   DataGrid,
   GridColDef,
-  GridEventListener,
-  GridRowId,
-  GridRowModel,
-  GridRowEditStopReasons,
-  GridSlotProps,
   Toolbar,
   ToolbarButton,
 } from "@mui/x-data-grid";
@@ -30,25 +24,11 @@ declare module "@mui/x-data-grid" {
   }
 }
 
-function EditToolbar(props: GridSlotProps["toolbar"]) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [
-      ...oldRows,
-      { id, name: "", age: "", role: "", isNew: true },
-    ]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
-    }));
-  };
-
+function EditToolbar() {
   return (
     <Toolbar>
       <Tooltip title="Add record">
-        <ToolbarButton onClick={handleClick}>
+        <ToolbarButton disabled={true}>
           <AddIcon fontSize="small" />
         </ToolbarButton>
       </Tooltip>
@@ -57,49 +37,8 @@ function EditToolbar(props: GridSlotProps["toolbar"]) {
 }
 
 export default function FullFeaturedCrudGrid({ row }: { row: GridRowsProp }) {
-  const [rows, setRows] = React.useState(row);
-  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
-    {}
-  );
-
-  const handleRowEditStop: GridEventListener<"rowEditStop"> = (
-    params,
-    event
-  ) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    }
-  };
-
-  const handleEditClick = (id: GridRowId) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleSaveClick = (id: GridRowId) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleCancelClick = (id: GridRowId) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow!.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
-  };
-
-  const processRowUpdate = (newRow: GridRowModel) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
-  };
-
-  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
+  const [rows] = React.useState(row);
+  const [rowModesModel] = React.useState<GridRowModesModel>({});
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 180, editable: false },
@@ -153,13 +92,7 @@ export default function FullFeaturedCrudGrid({ row }: { row: GridRowsProp }) {
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
         slots={{ toolbar: EditToolbar }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel },
-        }}
         showToolbar
       />
     </Box>
