@@ -5,6 +5,7 @@ resources:
   #- registry.yaml
   - ingress.yaml
   - pv.yaml
+  - env.yaml
 labels:
   - includeSelectors: true
     pairs:

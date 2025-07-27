@@ -20,6 +20,9 @@ spec:
           volumeMounts:
             - name: zip
               mountPath: /nextjs/public/files
+          envFrom:
+            - secretRef:
+                name: dashboard
       volumes:
         - name: zip
           persistentVolumeClaim:
