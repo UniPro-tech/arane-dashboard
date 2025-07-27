@@ -180,6 +180,7 @@ export default function MiniDrawer({
                       justifyContent: "center",
                     },
               ]}
+              href="/dashboard"
             >
               <ListItemIcon
                 sx={[
