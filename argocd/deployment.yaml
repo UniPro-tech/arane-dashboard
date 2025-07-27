@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: production
+  name: dashbord
 spec:
   selector:
     matchLabels:
@@ -14,7 +14,7 @@ spec:
       containers:
         - name: app
           imagePullPolicy: Always
-          image: registry.uniproject.jp/hp-infra/nfs-dashboard:1.0.0
+          image: registry.uniproject.jp/hp-infra/arane-dashboard:1.0.0
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -23,14 +23,14 @@ spec:
       volumes:
         - name: zip
           persistentVolumeClaim:
-            claimName: zip
+            claimName: zip-dash
       imagePullSecrets:
         - name: internal-harbor
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: arane-dash
+  name: dashboard
 spec:
   ipFamilyPolicy: RequireDualStack
   selector:
