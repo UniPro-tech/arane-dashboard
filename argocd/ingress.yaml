@@ -22,4 +22,4 @@ spec:
   tls:
     - hosts:
         - arane-dash.uniproject.jp
-      secretName: arane-site-tls
+      secretName: arane-site-dashboard-tls
