@@ -15,7 +15,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   claimRef:
     namespace: arane-site
-    name: zip
+    name: zip-dash
 
 ---
 apiVersion: v1
