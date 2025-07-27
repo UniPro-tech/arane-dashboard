@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: ramura-site
+                name: dashboard
                 port:
                   number: 80
   tls:
