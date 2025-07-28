@@ -19,7 +19,7 @@ spec:
             - containerPort: 3000
           volumeMounts:
             - name: zip
-              mountPath: /nextjs/public/files
+              mountPath: /app/public/files
           envFrom:
             - secretRef:
                 name: dashboard
