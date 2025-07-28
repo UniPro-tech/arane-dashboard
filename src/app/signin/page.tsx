@@ -12,7 +12,7 @@ export default function Page() {
       <form
         action={async () => {
           "use server";
-          await signIn("discord");
+          await signIn("discord", { redirectTo: "/dashboard" });
         }}
       >
         <Stack spacing={2} alignItems="center">

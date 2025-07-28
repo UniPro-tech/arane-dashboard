@@ -45,6 +45,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 600,
   },
   pages: {
-    signIn: "/",
+    signIn: "/signin",
   },
 });
