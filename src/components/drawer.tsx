@@ -28,7 +28,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import FolderIcon from "@mui/icons-material/Folder";
-import ModeProvider, { useMode } from "./ModeProvider";
+import { useMode } from "./ModeProvider";
 
 const drawerWidth = 240;
 
@@ -125,7 +125,6 @@ export default function MiniDrawer({
     },
   });
   const [open, setOpen] = React.useState(false);
-  // mode is provided via ModeProvider. We'll render a ModeSelect that consumes it.
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -233,9 +232,7 @@ export default function MiniDrawer({
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <ThemeProvider theme={theme}>
-          <ModeProvider>{children}</ModeProvider>
-        </ThemeProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </Box>
     </Box>
   );
