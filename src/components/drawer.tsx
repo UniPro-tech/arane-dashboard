@@ -14,6 +14,10 @@ import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -24,6 +28,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import FolderIcon from "@mui/icons-material/Folder";
+import ModeProvider, { useMode } from "./ModeProvider";
 
 const drawerWidth = 240;
 
@@ -120,6 +125,7 @@ export default function MiniDrawer({
     },
   });
   const [open, setOpen] = React.useState(false);
+  // mode is provided via ModeProvider. We'll render a ModeSelect that consumes it.
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -149,8 +155,18 @@ export default function MiniDrawer({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            荒音の夜 ダッシュボード
+            ダッシュボード
           </Typography>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+            }}
+          >
+            <ModeSelect />
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -217,8 +233,38 @@ export default function MiniDrawer({
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        <ThemeProvider theme={theme}>
+          <ModeProvider>{children}</ModeProvider>
+        </ThemeProvider>
       </Box>
     </Box>
+  );
+}
+
+function ModeSelect() {
+  const { mode, setMode } = useMode();
+
+  return (
+    <FormControl
+      sx={{
+        ml: 2,
+      }}
+      size="small"
+    >
+      <InputLabel id="mode-select-label" className="text-white">
+        モード
+      </InputLabel>
+      <Select
+        labelId="mode-select-label"
+        id="mode-select"
+        sx={{ color: "white" }}
+        value={mode}
+        label="モード"
+        onChange={(e) => setMode(e.target.value as string)}
+      >
+        <MenuItem value="arane">荒音の夜</MenuItem>
+        <MenuItem value="gesshoku">月蝕</MenuItem>
+      </Select>
+    </FormControl>
   );
 }
