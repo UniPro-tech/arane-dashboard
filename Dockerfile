@@ -15,6 +15,8 @@ COPY . .
 
 RUN bun install --frozen-lockfile
 
+RUN npm run build
+
 EXPOSE 3000
 
 CMD ["./run.sh"]
