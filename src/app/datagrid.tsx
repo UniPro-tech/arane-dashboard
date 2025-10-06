@@ -36,7 +36,15 @@ function EditToolbar() {
   );
 }
 
-export default function FullFeaturedCrudGrid({ row }: { row: GridRowsProp }) {
+import DeleteIcon from "@mui/icons-material/Delete";
+
+export default function FullFeaturedCrudGrid({
+  row,
+  onDelete,
+}: {
+  row: GridRowsProp;
+  onDelete?: (id: string) => void | Promise<void>;
+}) {
   const [rows] = React.useState(row);
   const [rowModesModel] = React.useState<GridRowModesModel>({});
 
@@ -61,7 +69,7 @@ export default function FullFeaturedCrudGrid({ row }: { row: GridRowsProp }) {
       width: 100,
       cellClassName: "actions",
       getActions: ({ id }) => {
-        return [
+        const actions = [
           <Link
             href={`/dashboard/edit/${id}`}
             key={randomId()}
@@ -70,6 +78,27 @@ export default function FullFeaturedCrudGrid({ row }: { row: GridRowsProp }) {
             <EditIcon />
           </Link>,
         ];
+        if (onDelete) {
+          actions.push(
+            <button
+              key={randomId()}
+              onClick={(e) => {
+                e.stopPropagation();
+                // id may be number or string
+                onDelete(String(id));
+              }}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+              title="Delete"
+            >
+              <DeleteIcon />
+            </button>
+          );
+        }
+        return actions;
       },
     },
   ];

@@ -28,3 +28,25 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "internal" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const mode = url.searchParams.get("mode") || "arane";
+    const filename = url.searchParams.get("filename");
+    if (!filename)
+      return NextResponse.json({ error: "filename required" }, { status: 400 });
+
+    const filePath = `./public/files/${mode}${
+      mode == "gesshoku" ? "/files" : ""
+    }/${filename}`;
+    if (!fs.existsSync(filePath))
+      return NextResponse.json({ error: "not found" }, { status: 404 });
+
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("/api/file DELETE error", e);
+    return NextResponse.json({ error: "internal" }, { status: 500 });
+  }
+}
