@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const mode = url.searchParams.get("mode") || "arane";
-    const dir = `./public/files/${mode}`;
+    const dir = `./public/files/${mode}${mode == "gesshoku" ? "/files" : ""}`;
 
     if (!fs.existsSync(dir)) {
       return NextResponse.json([]);

@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import FullFeaturedCrudGrid from "../app/dashboard/datagrid";
+import FullFeaturedCrudGrid from "../app/datagrid";
 import { useMode } from "./ModeProvider";
 
 type FileRow = {

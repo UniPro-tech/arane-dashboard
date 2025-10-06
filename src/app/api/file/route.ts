@@ -9,7 +9,9 @@ export async function GET(request: Request) {
     if (!filename)
       return NextResponse.json({ error: "filename required" }, { status: 400 });
 
-    const filePath = `./public/files/${mode}/${filename}`;
+    const filePath = `./public/files/${mode}${
+      mode == "gesshoku" ? "/files" : ""
+    }/${filename}`;
     if (!fs.existsSync(filePath))
       return NextResponse.json({ error: "not found" }, { status: 404 });
 
