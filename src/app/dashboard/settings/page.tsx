@@ -20,6 +20,32 @@ export default function SettingsPage() {
     // array of ids
     if (Array.isArray(sel)) return sel.map((v: unknown) => String(v));
     const obj = sel as Record<string, unknown>;
+    // If shape is { type, ids: ... } (newer MUI), prefer obj.ids
+    const idsCandidate = obj?.ids as unknown;
+    if (idsCandidate != null) {
+      // array
+      if (Array.isArray(idsCandidate))
+        return (idsCandidate as unknown[]).map((v) => String(v));
+      // if it has forEach
+      try {
+        const s = idsCandidate as unknown as {
+          forEach?: (cb: (v: unknown) => void) => void;
+          keys?: () => Iterable<unknown>;
+        };
+        if (typeof s.forEach === "function") {
+          const out: (string | number)[] = [];
+          s.forEach!((v: unknown) => out.push(String(v)));
+          return out;
+        }
+        if (typeof s.keys === "function") {
+          const out: (string | number)[] = [];
+          for (const k of s.keys!()) out.push(String(k));
+          return out;
+        }
+      } catch (err) {
+        void err;
+      }
+    }
     // common shape: { ids: [...] }
     if (Array.isArray(obj?.ids))
       return (obj.ids as unknown[]).map((v) => String(v));
@@ -243,9 +269,13 @@ export default function SettingsPage() {
   }
 
   function handleDelete() {
-    if (selectionModel.length === 0) return;
-    setRows((prev) => prev.filter((r) => !selectionModel.includes(r.id)));
+    console.log("handleDelete selectionModel:", selectionModel);
+    console.log("handleDelete rows before:", rows);
+    if (!selectionModel || selectionModel.length === 0) return;
+    const selSet = new Set(selectionModel.map((s) => String(s)));
+    setRows((prev) => prev.filter((r) => !selSet.has(String(r.id))));
     setSelectionModel([]);
+    console.log("handleDelete rows after:", rows);
   }
 
   return (
