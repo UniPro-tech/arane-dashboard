@@ -17,8 +17,12 @@ export async function GET(request: Request) {
       id: file,
       name: file,
       size: fs.statSync(`${dir}/${file}`).size,
-      createdAt: new Date(fs.statSync(`${dir}/${file}`).birthtime).toLocaleString("ja-JP"),
-      updatedAt: new Date(fs.statSync(`${dir}/${file}`).mtime).toLocaleString("ja-JP"),
+      createdAt: new Date(
+        fs.statSync(`${dir}/${file}`).birthtime
+      ).toLocaleString("ja-JP"),
+      updatedAt: new Date(fs.statSync(`${dir}/${file}`).mtime).toLocaleString(
+        "ja-JP"
+      ),
     }));
 
     return NextResponse.json(rows);

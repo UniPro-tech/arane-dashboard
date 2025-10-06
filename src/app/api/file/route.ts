@@ -6,10 +6,12 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const mode = url.searchParams.get("mode") || "arane";
     const filename = url.searchParams.get("filename");
-    if (!filename) return NextResponse.json({ error: "filename required" }, { status: 400 });
+    if (!filename)
+      return NextResponse.json({ error: "filename required" }, { status: 400 });
 
     const filePath = `./public/files/${mode}/${filename}`;
-    if (!fs.existsSync(filePath)) return NextResponse.json({ error: "not found" }, { status: 404 });
+    if (!fs.existsSync(filePath))
+      return NextResponse.json({ error: "not found" }, { status: 404 });
 
     const stat = fs.statSync(filePath);
     return NextResponse.json({
