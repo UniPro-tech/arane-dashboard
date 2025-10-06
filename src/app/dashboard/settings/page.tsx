@@ -13,6 +13,50 @@ export default function SettingsPage() {
   const [filename, setFilename] = useState<string>("files.json");
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState<GridColDef[]>([]);
+  const [selectionModel, setSelectionModel] = useState<(string | number)[]>([]);
+
+  function extractIdsFromSelection(sel: unknown): (string | number)[] {
+    if (!sel) return [];
+    // array of ids
+    if (Array.isArray(sel)) return sel.map((v: unknown) => String(v));
+    const obj = sel as Record<string, unknown>;
+    // common shape: { ids: [...] }
+    if (Array.isArray(obj?.ids))
+      return (obj.ids as unknown[]).map((v) => String(v));
+    // if it has forEach (Set/Map-like)
+    try {
+      type ForEachLike = { forEach?: (cb: (v: unknown) => void) => void };
+      type KeysLike = { keys?: () => Iterable<unknown> };
+      const s = sel as unknown as ForEachLike & KeysLike;
+      if (typeof s.forEach === "function") {
+        const out: (string | number)[] = [];
+        s.forEach!((v) => out.push(String(v)));
+        return out;
+      }
+      if (typeof s.keys === "function") {
+        const out: (string | number)[] = [];
+        for (const k of s.keys!()) out.push(String(k));
+        return out;
+      }
+    } catch (err) {
+      void err;
+    }
+
+    // last resort: if it's a plain object mapping id->true
+    try {
+      const out: (string | number)[] = [];
+      for (const k in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k]) {
+          out.push(k);
+        }
+      }
+      if (out.length) return out;
+    } catch (err) {
+      void err;
+    }
+
+    return [];
+  }
 
   // initialize basic columns
   useEffect(() => {
@@ -22,7 +66,7 @@ export default function SettingsPage() {
           field: "name",
           headerName: "ファイル名",
           width: 300,
-          editable: false,
+          editable: true,
         },
         { field: "label", headerName: "ラベル", flex: 1, editable: true },
       ]);
@@ -90,7 +134,7 @@ export default function SettingsPage() {
             };
           });
           setColumns([
-            { field: "name", headerName: "名前", width: 300, editable: false },
+            { field: "name", headerName: "名前", width: 300, editable: true },
             { field: "label", headerName: "ラベル", flex: 1, editable: true },
           ]);
           // done
@@ -173,6 +217,37 @@ export default function SettingsPage() {
     }
   }
 
+  function handleAdd() {
+    // create a new row with empty values for current columns
+    const newId = String(Date.now());
+    const newRow: Row = { id: newId } as Row;
+
+    if (filename === "files.json") {
+      // provide sensible defaults for files.json
+      newRow.name = `new-file-${rows.length + 1}`;
+      newRow.label = "";
+    } else if (columns.length === 0) {
+      // ensure at least a value column
+      setColumns([
+        { field: "value", headerName: "値", flex: 1, editable: true },
+      ]);
+      newRow.value = "";
+    } else {
+      columns.forEach((c) => {
+        if (c.field === "id") return;
+        newRow[c.field] = "";
+      });
+    }
+
+    setRows((prev) => [...prev, newRow]);
+  }
+
+  function handleDelete() {
+    if (selectionModel.length === 0) return;
+    setRows((prev) => prev.filter((r) => !selectionModel.includes(r.id)));
+    setSelectionModel([]);
+  }
+
   return (
     <div style={{ height: 600, width: "100%", padding: 16 }}>
       <Stack direction="row" spacing={2} alignItems="center" marginBottom={2}>
@@ -201,6 +276,24 @@ export default function SettingsPage() {
         </Button>
 
         <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleAdd}
+          disabled={loading}
+        >
+          追加
+        </Button>
+
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleDelete}
+          disabled={loading || selectionModel.length === 0}
+        >
+          削除
+        </Button>
+
+        <Button
           variant="contained"
           color="primary"
           onClick={handleSave}
@@ -213,6 +306,11 @@ export default function SettingsPage() {
       <DataGrid
         rows={rows}
         columns={columns}
+        checkboxSelection
+        onRowSelectionModelChange={(newSel) => {
+          console.log("onRowSelectionModelChange received:", newSel);
+          setSelectionModel(extractIdsFromSelection(newSel));
+        }}
         editMode="row"
         processRowUpdate={(newRow: GridRowModel) => {
           const nr: Row = { id: String(newRow.id) } as Row;
